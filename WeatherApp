@@ -1,0 +1,236 @@
+package selintro;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import java.util.ArrayList;  
+
+public class WeatherApp {
+ 
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int option;
+
+        do {
+            System.out.println("Select an option:");
+            System.out.println("1. Get weather");
+            System.out.println("2. Get Wind Speed");
+            System.out.println("3. Get Pressure");
+            System.out.println("0. Exit");
+            option = scanner.nextInt();
+
+            switch (option) {
+                case 1:
+                    getWeatherInfo(scanner);
+                    break;
+                case 2:
+                    getWindSpeedInfo(scanner);
+                    break;
+                case 3:
+                    getPressureInfo(scanner);
+                    break;
+                case 0:
+                    System.out.println("Exiting the program.");
+                    break;
+                default:
+                    System.out.println("Invalid option. Try again.");
+                    break;
+            }
+        } while (option != 0);
+
+        scanner.close();
+    }
+
+    private static void getWeatherInfo(Scanner scanner) {
+        System.out.println("Enter the date (YYYY-MM-DD HH:mm:ss): ");
+        String date = scanner.nextLine();
+        date += scanner.nextLine();
+       
+
+        String responseStr = makeApiCall(date);
+
+        
+        double temperature = 0 ;
+        try {
+
+        	String str  = responseStr.toString();
+        	//JSONObject object = responseStr;
+        	JSONParser parse = new JSONParser();
+        	JSONObject data_obj = (JSONObject) parse.parse(str);
+
+        	 JSONArray jsonArray = (JSONArray) data_obj.get("list");  
+        	//JSONObject valueObj =(JSONObject) data_obj.get("cnt");
+        	 ArrayList<Object> listdata = new ArrayList<Object>();  
+
+             if (jsonArray != null) {   
+
+                 for (int i=0;i<jsonArray.size();i++)
+                 {   
+                     listdata.add(jsonArray.get(i));  
+                 }   
+             }  
+             //System.out.println("Each element of ArrayList");  
+            
+             for(int i=0; i<listdata.size(); i++) 
+             {  
+            	 JSONObject obj = (JSONObject) listdata.get(i);
+            	String strdat =(String) obj.get("dt_txt");
+         
+                if (date.equals(strdat)) {
+           
+            	JSONObject obj1 = (JSONObject) obj.get("main");
+            	temperature =(double) obj1.get("temp");  
+            	//System.out.println(strdat);  
+            	break;
+                }
+                
+               
+             }  
+        	}
+        	catch(Exception ex) {
+        		System.out.println("GET Request exception" +ex.toString()); 
+        	}
+        System.out.println("Temperature on " + date + " is: " + temperature + " °C");
+    }
+
+    private static void getWindSpeedInfo(Scanner scanner) {
+    	System.out.println("Enter the date (YYYY-MM-DD HH:mm:ss): ");
+        String date = scanner.nextLine();
+        date += scanner.nextLine();
+        //scanner.close();
+
+        String responseStr = makeApiCall(date);
+
+        double windspeed = 0 ;
+        try {
+
+        	String str  = responseStr.toString();
+        	//JSONObject object = responseStr;
+        	JSONParser parse = new JSONParser();
+        	JSONObject data_obj = (JSONObject) parse.parse(str);
+
+        	 JSONArray jsonArray = (JSONArray) data_obj.get("list");  
+        	//JSONObject valueObj =(JSONObject) data_obj.get("cnt");
+        	 ArrayList<Object> listdata = new ArrayList<Object>();  
+
+             if (jsonArray != null) {   
+
+                 for (int i=0;i<jsonArray.size();i++)
+                 {  
+                     listdata.add(jsonArray.get(i));  
+                 }   
+             } 
+             //System.out.println("Each element of ArrayList");  
+            
+             for(int i=0; i<listdata.size(); i++) {  
+ 
+            	 JSONObject obj = (JSONObject) listdata.get(i);
+            	String strdat =(String) obj.get("dt_txt");
+            	  
+                if (date.equals(strdat)) 
+                {
+            	JSONObject obj1 = (JSONObject) obj.get("wind");
+            	windspeed =(double) obj1.get("speed");  
+            	//System.out.println(strdat);  
+            	break;
+                }    
+             } 
+        	}
+        	catch(Exception ex) {
+        		System.out.println("GET Request exception" +ex.toString()); 
+        	}
+        System.out.println("Wind Speed on" + date + " is: " + windspeed + " km/hr");
+    }
+
+    private static void getPressureInfo(Scanner scanner) {
+    	System.out.println("Enter the date (YYYY-MM-DD HH:mm:ss): ");
+        String date = scanner.nextLine();
+        date += scanner.nextLine();
+        //scanner.close();
+
+        String responseStr = makeApiCall(date);
+
+        double pressure = 0 ;
+        try {
+
+        	String str  = responseStr.toString();
+        	//JSONObject object = responseStr;
+        	JSONParser parse = new JSONParser();
+        	JSONObject data_obj = (JSONObject) parse.parse(str);
+
+        	 JSONArray jsonArray = (JSONArray) data_obj.get("list");  
+        	//JSONObject valueObj =(JSONObject) data_obj.get("cnt");
+        	 ArrayList<Object> listdata = new ArrayList<Object>();  
+
+             if (jsonArray != null) {   
+
+                 for (int i=0;i<jsonArray.size();i++)
+                 {   
+                     listdata.add(jsonArray.get(i)); 
+                 }   
+             }  
+            // System.out.println("Each element of ArrayList");  
+            
+             for(int i=0; i<listdata.size(); i++) {  
+
+            	 JSONObject obj = (JSONObject) listdata.get(i);
+            	String strdat =(String) obj.get("dt_txt");
+         
+                if (date.equals(strdat)) {
+            	
+            	JSONObject obj1 = (JSONObject) obj.get("main");
+            	pressure =(double) obj1.get("pressure");  
+            	//System.out.println(strdat);  
+            	break;
+                }   
+             }   
+        	}
+        	catch(Exception ex) {
+        		System.out.println("GET Request exception" +ex.toString()); 
+        	}
+        System.out.println("Pressure on" + date + " is: " + pressure + " N/m2"); 
+    }
+    private static String makeApiCall(String date) {
+    	StringBuffer responseStr =new StringBuffer();
+        try {
+        	String urlName = "https://samples.openweathermap.org/data/2.5/forecast/hourly?q=London,us&appid=b6907d289e10d714a6e88b30761fae22";  
+        	URL urlForGetReq = new URL(urlName);  
+        	String read = null;  
+        	HttpURLConnection connection = (HttpURLConnection) urlForGetReq.openConnection();  
+        	connection.setRequestMethod("GET");  
+        	
+        	int codeResponse = connection.getResponseCode();  
+        	 
+        	if (codeResponse == HttpURLConnection.HTTP_OK)   
+        	{  
+        
+        	InputStreamReader isrObj = new InputStreamReader(connection.getInputStream());  
+        	BufferedReader bf = new BufferedReader(isrObj);  
+        	 
+        	 responseStr = new StringBuffer();  
+        	while ((read = bf .readLine()) != null)  
+        	{  
+        	    responseStr.append(read);  
+        	}   
+        	  
+        	bf.close();  
+        	// disconnecting the connection  
+        	connection.disconnect();  
+
+            //return responseStr.toString();
+        }
+        	}
+        	catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return responseStr.toString();
+    }
+
+    
+}
